@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
    socket.emit('chatroom_users', chatRoomUsers);
  });
 
+
   
 
   // We can write our socket event listeners in here...
@@ -51,7 +52,7 @@ io.on("connection", (socket) => {
     __createdtime__,
   });
 });
-});
+
 
 
 
