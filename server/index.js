@@ -47,7 +47,7 @@ io.on("connection", (socket) => {
     let __createdtime__ = Date.now(); // Current timestamp
   // Send welcome msg to user that just joined chat only
   socket.emit('receive_message', {
-    message: `Welcome ${username}`,
+    message: `Bienvenido ${username}`,
     username: CHAT_BOT,
     __createdtime__,
   });
@@ -56,4 +56,4 @@ io.on("connection", (socket) => {
 
 
 
-server.listen(4000, () => "Server is running on port 3000 or 4000");
+server.listen(4000, () => "Server is running on port 3000");
