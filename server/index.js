@@ -43,6 +43,7 @@ io.on("connection", (socket) => {
   socket.on("join_room", (data) => {
     const { username, room } = data; // Data sent from client when join_room event emitted
     socket.join(room); // Join the user to a socket room
+ 
 
     let __createdtime__ = Date.now(); // Current timestamp
   // Send welcome msg to user that just joined chat only
@@ -52,6 +53,8 @@ io.on("connection", (socket) => {
     __createdtime__,
   });
 });
+
+console.log("Listen to")
 
 
 
