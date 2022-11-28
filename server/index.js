@@ -1,10 +1,15 @@
 // server/index.js
 
-const express = require("express");
+require('dotenv').config();
+console.log(process.env.HARPERDB_URL); // remove this after you've confirmed it working
+const express = require('express');
+
 const app = express();
 http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io"); // Add this
+
+const harperSaveMessage = require('./services/harper-save-message'); // Add this
 
 const CHAT_BOT = "ChatBot";
 // Add this
@@ -24,7 +29,7 @@ const io = new Server(server, {
 });
 
 // Listen for when the client connects via socket.io-client
-io.on("connection", (socket) => {
+io.on('connection', (socket) =>{
   console.log(`User connected ${socket.id}`);
 
   // Add a user to a room
@@ -54,6 +59,17 @@ io.on("connection", (socket) => {
     socket.to(room).emit("chatroom_users", chatRoomUsers);
     socket.emit("chatroom_users", chatRoomUsers);
   });
+
+  socket.on('send_message', (data) => {  // Permite que los usuarios se envíen mensajes entre sí con Socket.io
+    const { message, username, room, __createdtime__ } = data;
+    io.in(room).emit('receive_message', data); // Send to all users in room, including sender
+    harperSaveMessage(message, username, room, __createdtime__) // Save message in db
+      .then((response) => console.log(response))
+      .catch((err) => console.log(err));
+  });
 });
+
+
+
 
 server.listen(4000, () => "Server is running on port 3000");
