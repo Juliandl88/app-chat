@@ -1,15 +1,16 @@
 // server/index.js
 
-require('dotenv').config();
+require("dotenv").config();
 console.log(process.env.HARPERDB_URL); // remove this after you've confirmed it working
-const express = require('express');
+const express = require("express");
 
 const app = express();
 http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io"); // Add this
 
-const harperSaveMessage = require('./services/harper-save-message'); // Add this
+const harperSaveMessage = require("./services/harper-save-message");
+const harperGetMessages = require("./services/harper-get-messages"); // Add this
 
 const CHAT_BOT = "ChatBot";
 // Add this
@@ -29,7 +30,7 @@ const io = new Server(server, {
 });
 
 // Listen for when the client connects via socket.io-client
-io.on('connection', (socket) =>{
+io.on("connection", (socket) => {
   console.log(`User connected ${socket.id}`);
 
   // Add a user to a room
@@ -52,6 +53,14 @@ io.on('connection', (socket) =>{
       __createdtime__,
     });
 
+    // Get last 100 messages sent in the chat room
+    harperGetMessages(room)
+      .then((last100Messages) => {
+        // console.log('latest messages', last100Messages);
+        socket.emit("last_100_messages", last100Messages);
+      })
+      .catch((err) => console.log(err));
+
     // Save the new user to the room
     chatRoom = room;
     allUsers.push({ id: socket.id, username, room });
@@ -60,16 +69,14 @@ io.on('connection', (socket) =>{
     socket.emit("chatroom_users", chatRoomUsers);
   });
 
-  socket.on('send_message', (data) => {  // Permite que los usuarios se envíen mensajes entre sí con Socket.io
+  socket.on("send_message", (data) => {
+    // Permite que los usuarios se envíen mensajes entre sí con Socket.io
     const { message, username, room, __createdtime__ } = data;
-    io.in(room).emit('receive_message', data); // Send to all users in room, including sender
-    harperSaveMessage(message, username, room, __createdtime__) // Save message in db
-      .then((response) => console.log(response))
-      .catch((err) => console.log(err));
+    io.in(room).emit("receive_message", data); // Send to all users in room, including sender
+    harperSaveMessage(message, username, room, __createdtime__); // Save message in db
+    /*.then((response) => console.log(response))
+      .catch((err) => console.log(err));*/
   });
 });
-
-
-
 
 server.listen(4000, () => "Server is running on port 3000");
