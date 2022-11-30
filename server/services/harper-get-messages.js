@@ -3,8 +3,8 @@
 let axios = require('axios');
 
 function harperGetMessages(room) {
-  const dbUrl = process.env.HARPERDB_URL;
-  const dbPw = process.env.HARPERDB_PW;
+  const dbUrl = /*process.env.HARPERDB_URL;*/"https://cloud-1-juliand.harperdbcloud.com"
+  const dbPw = /*process.env.HARPERDB_PW;*/"Y2hhdHJvb21fZGI6VGl6aWFubzEwIQ=="
   if (!dbUrl || !dbPw) return null;
 
   let data = JSON.stringify({
